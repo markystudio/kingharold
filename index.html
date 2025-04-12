@@ -66,22 +66,6 @@
             console.log('Marker 2 detected!');
         });
 
-        // Component: Maintain size relative to marker
-        AFRAME.registerComponent('scale-relative-to-marker', {
-            tick: function () {
-                const marker = this.el;
-                if (marker.object3D.visible) {
-                    const linkedObject = marker.querySelector('a-entity');
-                    const markerScale = marker.object3D.scale; // Maintain relative size
-                    linkedObject.setAttribute('scale', {
-                        x: markerScale.x * 2,
-                        y: markerScale.y * 2,
-                        z: markerScale.z * 2
-                    });
-                }
-            }
-        });
-
         // Component: Align orientation with marker tilt
         AFRAME.registerComponent('align-to-marker-tilt', {
             tick: function () {
@@ -114,20 +98,6 @@
             }
         });
 
-        // Gesture Handling for Marker 1
-        AFRAME.registerComponent('custom-gesture1', {
-            init: function () {
-                this.el.addEventListener('gesturechange', (event) => {
-                    const scale = event.detail.scale || 1;
-                    this.el.setAttribute('scale', {
-                        x: scale,
-                        y: scale,
-                        z: scale
-                    });
-                });
-            }
-        });
-
         // Gesture Handling for Marker 2
         AFRAME.registerComponent('custom-gesture2', {
             init: function () {
@@ -141,18 +111,6 @@
                 });
             }
         });
-
-AFRAME.registerComponent('lock-flat-to-marker', {
-    tick: function () {
-        const marker = this.el;
-        if (marker.object3D.visible) {
-            const linkedObject = marker.querySelector('a-entity');
-            linkedObject.setAttribute('rotation', { x: -90, y: 0, z: 0 }); // Flat on screen
-        }
-    }
-});
-
-
 
     </script>
 </html>
