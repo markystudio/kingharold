@@ -18,12 +18,37 @@
             embedded
             gesture-detector
         >
+            <!-- Marker 1 -->
+            <a-marker
+                id="marker1"
+                type="pattern"
+                preset="custom"
+                url="assets/marker1.patt"
+                raycaster="objects: .clickable"
+                emitevents="true"
+                cursor="fuse: false; rayOrigin: mouse;"
+                scale="2 2 2"
+                scale-relative-to-marker
+                align-to-marker-tilt
+                align-position-dynamically
+                stable-position
+                lock-flat-to-marker
+            >
+                <a-entity id="linked-object1" scale="2 2 2" position="0 0 0">
+                    <a-image
+                        src="assets/asset.png"
+                        rotation="-90 0 0"
+                        custom-gesture1
+                    ></a-image>
+                </a-entity>
+            </a-marker>
+
             <!-- Marker 2 -->
             <a-marker
                 id="marker2"
                 type="pattern"
                 preset="custom"
-                url="assets/pattern.patt"
+                url="assets/marker2.patt"
                 raycaster="objects: .clickable"
                 emitevents="true"
                 cursor="fuse: false; rayOrigin: mouse;"
@@ -37,8 +62,8 @@
                 <a-entity id="linked-object2" scale="2 2 2" position="0 0 0">
                     <a-video
                         src="#sample-video"
-                        width="1"
-                        height="1"
+                        width="1.08"
+                        height="1.72"
                         class="clickable"
                         position="0 0 0"
                         rotation="-90 0 0"
@@ -61,6 +86,11 @@
     </body>
 
     <script>
+        // Marker 1 Events
+        document.querySelector('#marker1').addEventListener('markerFound', () => {
+            console.log('Marker 1 detected!');
+        });
+
         // Marker 2 Events
         document.querySelector('#marker2').addEventListener('markerFound', () => {
             console.log('Marker 2 detected!');
