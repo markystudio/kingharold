@@ -27,14 +27,14 @@
                 raycaster="objects: .clickable"
                 emitevents="true"
                 cursor="fuse: false; rayOrigin: mouse;"
-                scale="2 2 2"
+                scale="1 1 1"
                 scale-relative-to-marker
                 align-to-marker-tilt
                 align-position-dynamically
                 stable-position
                 lock-flat-to-marker
             >
-                <a-entity id="linked-object2" scale="2 2 2" position="0 1 0">
+                <a-entity id="linked-object2" scale="1 1 1" position="0 1 0">
                     <a-video
                         src="#sample-video"
                         width="1.08"
@@ -91,7 +91,7 @@
                     const linkedObject = marker.querySelector('a-entity');
                     linkedObject.setAttribute('position', {
                         x: markerPosition.x,
-                        y: markerPosition.y + 4, // Adjustable offset
+                        y: markerPosition.y + 0.5, // Adjustable offset
                         z: markerPosition.z
                     });
                 }
