@@ -4,6 +4,8 @@
         <!-- Include Required Libraries -->
         <script src="https://aframe.io/releases/1.0.4/aframe.min.js"></script>
         <script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar.js"></script>
+        <script src="https://raw.githack.com/AR-js-org/studio-backend/master/src/modules/marker/tools/gesture-detector.js"></script>
+        <script src="https://raw.githack.com/AR-js-org/studio-backend/master/src/modules/marker/tools/gesture-handler.js"></script>
     </head>
 
     <body style="margin: 0; overflow: auto;">
@@ -11,26 +13,64 @@
         <a-scene
             vr-mode-ui="enabled: false;"
             loading-screen="enabled: false;"
-            arjs="sourceType: webcam; trackingMethod: best; debugUIEnabled: false;"
+            arjs="sourceType: webcam; trackingMethod: best; debugUIEnabled: false; smooth: true; smoothCount: 5; smoothTolerance: 0.02; smoothThreshold: 5"
+            id="scene"
             embedded
+            gesture-detector
         >
-            <!-- Marker (remains for other entities, if needed) -->
+            <!-- Marker 1 -->
+            <a-marker
+                id="marker1"
+                type="pattern"
+                preset="custom"
+                url="assets/marker1.patt"
+                raycaster="objects: .clickable"
+                emitevents="true"
+                cursor="fuse: false; rayOrigin: mouse;"
+                scale="2 2 2"
+                scale-relative-to-marker
+                align-to-marker-tilt
+                align-position-dynamically
+                stable-position
+                lock-flat-to-marker
+            >
+                <a-entity id="linked-object1" scale="2 2 2" position="0 0 0">
+                    <a-image
+                        src="assets/asset.png"
+                        rotation="-90 0 0"
+                        custom-gesture1
+                    ></a-image>
+                </a-entity>
+            </a-marker>
+
+            <!-- Marker 2 -->
             <a-marker
                 id="marker2"
                 type="pattern"
                 preset="custom"
                 url="assets/pattern.patt"
+                raycaster="objects: .clickable"
                 emitevents="true"
-            ></a-marker>
-
-            <!-- Video (detached and positioned independently) -->
-            <a-entity position="0 3 -6" rotation="0 0 0">
-                <a-video
-                    src="#sample-video"
-                    width="1.08"
-                    height="1.22"
-                ></a-video>
-            </a-entity>
+                cursor="fuse: false; rayOrigin: mouse;"
+                scale="2 2 2"
+                scale-relative-to-marker
+                align-to-marker-tilt
+                align-position-dynamically
+                stable-position
+                lock-flat-to-marker
+            >
+                <a-entity id="linked-object2" scale="2 2 2" position="0 0 0">
+                    <a-video
+                        src="#sample-video"
+                        width="1.08"
+                        height="1.72"
+                        class="clickable"
+                        position="0 0 0"
+                        rotation="-90 0 0"
+                        custom-gesture2
+                    ></a-video>
+                </a-entity>
+            </a-marker>
 
             <!-- Camera -->
             <a-entity camera></a-entity>
@@ -40,5 +80,128 @@
         <video id="sample-video" autoplay loop>
             <source src="assets/KH-video.mp4" type="video/mp4">
         </video>
+
+        <!-- Play Button -->
+        <button id="play-btn" style="position: absolute; top: 10px; left: 10px;" onclick="document.getElementById('sample-video').play()">Play Video</button>
     </body>
+
+    <script>
+        // Marker 1 Events
+        document.querySelector('#marker1').addEventListener('markerFound', () => {
+            console.log('Marker 1 detected!');
+        });
+
+        // Marker 2 Events
+        document.querySelector('#marker2').addEventListener('markerFound', () => {
+            console.log('Marker 2 detected!');
+        });
+
+        // Component: Maintain size relative to marker
+        AFRAME.registerComponent('scale-relative-to-marker', {
+            tick: function () {
+                const marker = this.el;
+                if (marker.object3D.visible) {
+                    const linkedObject = marker.querySelector('a-entity');
+                    const markerScale = marker.object3D.scale; // Maintain relative size
+                    linkedObject.setAttribute('scale', {
+                        x: markerScale.x * 2,
+                        y: markerScale.y * 2,
+                        z: markerScale.z * 2
+                    });
+                }
+            }
+        });
+
+        // Component: Align orientation with marker tilt
+        AFRAME.registerComponent('align-to-marker-tilt', {
+            tick: function () {
+                const marker = this.el;
+                if (marker.object3D.visible) {
+                    const linkedObject = marker.querySelector('a-entity');
+                    const markerRotation = marker.object3D.rotation;
+                    linkedObject.setAttribute('rotation', {
+                        x: THREE.Math.radToDeg(markerRotation.x),
+                        y: THREE.Math.radToDeg(markerRotation.y),
+                        z: THREE.Math.radToDeg(markerRotation.z)
+                    });
+                }
+            }
+        });
+
+        // Component: Align position relative to marker
+        AFRAME.registerComponent('align-position-dynamically', {
+            tick: function () {
+                const marker = this.el;
+                if (marker.object3D.visible) {
+                    const markerPosition = marker.object3D.position;
+                    const linkedObject = marker.querySelector('a-entity');
+                    linkedObject.setAttribute('position', {
+                        x: markerPosition.x,
+                        y: markerPosition.y + 0.5, // Adjustable offset
+                        z: markerPosition.z
+                    });
+                }
+            }
+        });
+
+        // Gesture Handling for Marker 1
+        AFRAME.registerComponent('custom-gesture1', {
+            init: function () {
+                this.el.addEventListener('gesturechange', (event) => {
+                    const scale = event.detail.scale || 1;
+                    this.el.setAttribute('scale', {
+                        x: scale,
+                        y: scale,
+                        z: scale
+                    });
+                });
+            }
+        });
+
+        // Gesture Handling for Marker 2
+        AFRAME.registerComponent('custom-gesture2', {
+            init: function () {
+                this.el.addEventListener('gesturechange', (event) => {
+                    const scale = event.detail.scale || 1;
+                    this.el.setAttribute('scale', {
+                        x: scale * 1.5,
+                        y: scale * 1.5,
+                        z: scale * 1.5
+                    });
+                });
+            }
+        });
+
+AFRAME.registerComponent('lock-flat-to-marker', {
+    tick: function () {
+        const marker = this.el;
+        if (marker.object3D.visible) {
+            const linkedObject = marker.querySelector('a-entity');
+            linkedObject.setAttribute('rotation', { x: -90, y: 0, z: 0 }); // Flat on screen
+        }
+    }
+});
+
+AFRAME.registerComponent('stable-position', {
+    schema: { type: 'vec3', default: { x: 0, y: 0, z: 0 } },
+    tick: function () {
+        const marker = this.el;
+        const object = marker.querySelector('a-entity');
+        if (marker.object3D.visible) {
+            const currentPosition = marker.object3D.position;
+            const lastPosition = this.data;
+            if (
+                Math.abs(currentPosition.x - lastPosition.x) > 0.01 ||
+                Math.abs(currentPosition.y - lastPosition.y) > 0.01 ||
+                Math.abs(currentPosition.z - lastPosition.z) > 0.01
+            ) {
+                // Only update position if significant movement is detected
+                object.setAttribute('position', currentPosition);
+                this.data = currentPosition;
+            }
+        }
+    }
+});
+
+    </script>
 </html>
