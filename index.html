@@ -95,3 +95,16 @@
             onclick="location.reload()">
             Camera Refresh
         </button>
+
+
+<script>
+AFRAME.registerComponent('lock-flat-to-marker', {
+    tick: function () {
+        const marker = this.el;
+        if (marker.object3D.visible) {
+            const linkedObject = marker.querySelector('a-entity');
+            linkedObject.setAttribute('rotation', { x: -90, y: 0, z: 0 }); // Keep flat
+        }
+    }
+});
+</script>
